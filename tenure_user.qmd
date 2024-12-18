@@ -1,0 +1,505 @@
+---
+title: "Land Administration Guide"
+author: "Dom Hinchley"
+editor: visual
+execute: 
+  echo: false
+  warning: false
+format: 
+  html:
+    page-layout: full
+    mermaid: 
+      theme: forest
+---
+
+```{r setup}
+
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(snakecase)
+
+options(knitr.kable.NA = '')
+
+source('db_con.R')
+
+
+get_domain_table <- function(con, domain_table){
+  
+  dom <- DBI::dbReadTable(con, domain_table) |>
+    arrange(dom_order_id) |>
+    select(1:3) |>
+    rename_with(.fn = to_title_case, .cols = 2:3)
+  return(dom)
+}
+
+
+db_con <- db_con(verbose = F)
+
+```
+
+# Introduction {#intro}
+
+All nature reserves the Trust manages are are made up of discrete parcels of land. Some of the parcels have been purchased by the Trust, others are leased (usually on a long term basis).
+
+The Trust needs a way to know what land holdings it currently owns and which it leases. This information is usually tracked through a [Land Terrier](https://en.wikipedia.org/wiki/Land_terrier). It is beyond the scope of the GIS database replicate all the features of a land terrier as this requires complex bi-temporal modelling and must consider [slowly changing dimensions](https://en.wikipedia.org/wiki/Slowly_changing_dimension) (SCDs) to maintain a full audit trail.
+
+In the absence of a full Land Terrier, some useful features have been implemented to track changes over time.
+
+# Schema Definition
+
+::: {#fig-land-admin-erd}
+![](assets/img/erd_small.png)
+
+An ERD diagram.
+:::
+
+# Tables
+
+## Sites {#domains.boundary_types}
+
+Sites are a classification given for a group of land holdings (parcels) that the Trust has an interest in; these are usually classed as nature reserves but could also constitute buildings or farms.
+
+-   Site geometries must only be constructed from parcels
+
+-   All areas in a site with or without known ownership/tenure must be accounted for on the parcel layer
+
+::: panel-tabset
+# Columns
+
+```{r sites-columns}
+
+dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE '' END AS pg_column_name,
+                        pg_column_type,
+                        pg_column_comment
+           
+           FROM utils.get_table_columns_info('land_admin', 'sites')") |>
+  kable() |>
+  footnote(general = '* mandatory field')
+
+```
+
+# Constraints
+
+```{r sites-constraints}
+
+dbGetQuery(db_con, "SELECT pg_constraint_name,
+                        pg_constraint_def,
+                        pg_constraint_comment
+           FROM utils.get_table_constraints_info('land_admin', 'sites')") |>
+  kable()
+```
+
+# Privileges
+
+```{r sites-privileges}
+
+dbGetQuery(db_con, "SELECT pg_privilege_type,
+                        pg_privilege_grantees,
+                        pg_privilege_description
+           FROM utils.get_table_privileges_info('land_admin', 'sites')") |>
+  kable()
+```
+:::
+
+::: callout-note
+The `sites` table does not have a geometry. The full site table is created from a view that constructs the boundaries from the current YWT tenure parcels. The view can then be enriched by spatially comparing the parcels to externally sourced data sets.
+:::
+
+### Domains
+
+::: panel-tabset
+# Main Habitat
+
+```{r domain-main-habitat}
+
+get_domain_table(db_con, 'dom_main_habitats') %>%
+  kable()
+
+```
+
+# Site Category
+
+```{r domain-site-category}
+
+get_domain_table(db_con, 'dom_site_categories') %>%
+  kable()
+
+```
+
+# Site Wildness
+
+```{r domain-site-wildness}
+
+get_domain_table(db_con, 'dom_site_wildness') %>%
+  kable()
+
+```
+:::
+
+## Parcels
+
+Parcel geometries form the building blocks of sites they may or may not be registered with [HM Land Registry](https://www.gov.uk/government/organisations/land-registry). The mapped parcels must adhere to the following rules;
+
+-   Parcel geometries must be valid and topologically correct
+
+-   Parcels must be reference the site they are part of
+
+::: callout-important
+A parcel version is archived to the `parcel_history` table when the `valid_to` field is modified. It should be left `NULL` for boundary corrections and adding missing information.
+:::
+
+::: panel-tabset
+### Columns
+
+```{r parcels-columns}
+
+dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE '' END AS pg_column_name,
+                        pg_column_type,
+                        pg_column_comment
+           
+           FROM utils.get_table_columns_info('land_admin', 'parcels')") |>
+  kable() |>
+  footnote(general = '* mandatory field')
+
+```
+
+### Constraints
+
+```{r parcels-constraints}
+
+dbGetQuery(db_con, "SELECT pg_constraint_name,
+                        pg_constraint_def,
+                        pg_constraint_comment
+           FROM utils.get_table_constraints_info('land_admin', 'parcels')") |>
+  kable()
+```
+
+### Privileges
+
+```{r parcels-privileges}
+
+dbGetQuery(db_con, "SELECT pg_privilege_type,
+                        pg_privilege_grantees,
+                        pg_privilege_description
+           FROM utils.get_table_privileges_info('land_admin', 'parcels')") |>
+  kable()
+```
+
+### Triggers
+
+```{r parcels-triggers}
+
+dbGetQuery(db_con, "SELECT pg_trigger_name,
+                        pg_trigger_comment,
+                        pg_trigger_function,
+                        pg_trigger_function_comment
+           FROM utils.get_table_triggers_info('land_admin', 'parcels')") |>
+  kable()
+```
+:::
+
+### Domains
+
+::: panel-tabset
+# Boundary Type
+
+```{r domain-boundary-type}
+
+get_domain_table(db_con, 'dom_boundary_types') %>%
+  kable()
+
+```
+
+# Wildness Rating
+
+```{r domain-access-status}
+
+get_domain_table(db_con, 'dom_site_wildness') %>%
+  kable()
+
+```
+:::
+
+## Ownership
+
+Tenure defines the ownership of the land parcels. The rows in the freehold tenure table function as timeline entries, recording the tenure history over time. Land ownership transitions immediately to the new owner upon the end of the previous ownership, hence there is only a tenure start field. Using this structure it is very easy to maintain the narrative assuming the following assumptions
+
+-   Tenure must not have gaps in date ranges. This would indicate that the parcel is not owned by anyone which cannot be true.
+
+-   A parcel cannot have the more then one freeholder at the same time.
+
+::: panel-tabset
+### Columns
+
+```{r ownership-columns}
+
+dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE '' END AS pg_column_name,
+                        pg_column_type,
+                        pg_column_comment
+           
+           FROM utils.get_table_columns_info('land_admin', 'ownership')") |>
+  kable() |>
+  footnote(general = '* mandatory field')
+
+```
+
+### Constraints
+
+```{r ownership-constraints}
+
+dbGetQuery(db_con, "SELECT pg_constraint_name,
+                        pg_constraint_def,
+                        pg_constraint_comment
+           FROM utils.get_table_constraints_info('land_admin', 'ownership')") |>
+  kable()
+```
+
+### Privileges
+
+```{r ownership-privileges}
+
+dbGetQuery(db_con, "SELECT pg_privilege_type,
+                        pg_privilege_grantees,
+                        pg_privilege_description
+           FROM utils.get_table_privileges_info('land_admin', 'ownership')") |>
+  kable()
+```
+
+### Triggers
+
+```{r ownership-triggers}
+
+dbGetQuery(db_con, "SELECT pg_trigger_name,
+                        pg_trigger_comment,
+                        pg_trigger_function,
+                        pg_trigger_function_comment
+           FROM utils.get_table_triggers_info('land_admin', 'ownership')") |>
+  kable()
+```
+:::
+
+### Domains
+
+::: panel-tabset
+# Ownership Types
+
+```{r domain-ownership-type}
+
+get_domain_table(db_con, 'dom_ownership_types') %>%
+  kable()
+
+```
+:::
+
+## Occupancy
+
+Land parcels may be leased by the Trust from a 3rd party. The Trust can also lease out land that it owns or sub-lease if it is in an agreement of its own. Parcels may not have a leasehold so this is optional. This table tracks both parcels that the Trust leases and those that it leases out..
+
+-   Leases must reference a freeholder (either directly or indirectly through a sub-lease).
+-   A leaseholder cannot lease form themselves.
+
+::: panel-tabset
+### Columns
+
+```{r occupancy-columns}
+
+dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE '' END AS pg_column_name,
+                        pg_column_type,
+                        pg_column_comment
+           
+           FROM utils.get_table_columns_info('land_admin', 'occupancy')") |>
+  kable() |>
+  footnote(general = '* mandatory field')
+
+```
+
+### Constraints
+
+```{r occupancy-constraints}
+
+dbGetQuery(db_con, "SELECT pg_constraint_name,
+                        pg_constraint_def,
+                        pg_constraint_comment
+           FROM utils.get_table_constraints_info('land_admin', 'occupancy')") |>
+  kable()
+```
+
+### Privileges
+
+```{r occupancy-privileges}
+
+dbGetQuery(db_con, "SELECT pg_privilege_type,
+                        pg_privilege_grantees,
+                        pg_privilege_description
+           FROM utils.get_table_privileges_info('land_admin', 'occupancy')") |>
+  kable()
+```
+
+### Triggers
+
+```{r occupancy-triggers}
+
+dbGetQuery(db_con, "SELECT pg_trigger_name,
+                        pg_trigger_comment,
+                        pg_trigger_function,
+                        pg_trigger_function_comment
+           FROM utils.get_table_triggers_info('land_admin', 'occupancy')") |>
+  kable()
+```
+:::
+
+### Domains
+
+::: panel-tabset
+# Occupancy Types
+
+```{r domain-occupancy-type}
+
+get_domain_table(db_con, 'dom_occupancy_types') %>%
+  kable()
+
+```
+:::
+
+## Parcel History
+
+Changes to parcels are an extended feature of the GIS data model. They
+
+::: callout-caution
+Parcel history tracking is setup using database triggers on the `parcels` table. It is not necessary to manually update data once the model has been established. If you notice errors/discrepancies, please notify the database administration team.
+:::
+
+::: panel-tabset
+### Columns
+
+```{r parcel-history-columns}
+
+dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE '' END AS pg_column_name,
+                        pg_column_type,
+                        pg_column_comment
+           
+           FROM utils.get_table_columns_info('land_admin', 'parcel_history')") |>
+  kable() |>
+  footnote(general = '* mandatory field')
+
+```
+
+### Constraints
+
+```{r parcel-history-constraints}
+
+dbGetQuery(db_con, "SELECT pg_constraint_name,
+                        pg_constraint_def,
+                        pg_constraint_comment
+           FROM utils.get_table_constraints_info('land_admin', 'parcel_history')") |>
+  kable()
+```
+
+### Privileges
+
+```{r parcel-history-privileges}
+
+dbGetQuery(db_con, "SELECT pg_privilege_type,
+                        pg_privilege_grantees,
+                        pg_privilege_description
+           FROM utils.get_table_privileges_info('land_admin', 'parcel_history')") |>
+  kable()
+```
+
+### Triggers
+
+```{r parcel-history-triggers}
+
+dbGetQuery(db_con, "SELECT pg_trigger_name,
+                        pg_trigger_comment,
+                        pg_trigger_function,
+                        pg_trigger_function_comment
+           FROM utils.get_table_triggers_info('land_admin', 'parcel_history')") |>
+  kable()
+```
+:::
+
+# Process
+
+::: callout-important
+The land administration process has been designed to be conducted using QGIS by someone with the `land_administrator` database privileges. The relationships and layers have been setup in a QGIS project which can be found in the `land_admin` schema.
+:::
+
+## Adding a new site
+
+1)  Add a new row to the `land_admin.sites` table
+2)  Check the spelling of the `site_name` as this will be the the **definitive name** and must be used as throughout the Trust.
+3)  Create an alpha-numeric code to use as the `site_id`. Try to make it a three letter code to keep it as simple as possible. This will become the **unique identifier** for the site and must be used consistently across the Trust.
+
+## Adding a new parcel
+
+::: callout-note
+Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out by a GIS specialist.
+:::
+
+1)  Use the INSPIRE polygons layer as a basis to digitise a new parcel on the `land_admin.parcels`. If the polygons disagree with the deeds, seek advice from {{< var estates_officer >}}.
+2)  Complete the required information including designating which site the parcel belongs to. **Leave the `valid_to` and `valid_from` fields as *`NULL`***.
+
+::: callout-warning
+Setting the `valid_from` at this stage will create a historical version of the parcel on the `parcel_history` table. This is only necessary when the geometry is being updated, not at creation.
+:::
+
+3)  Save the data to generate the `parcel_uuid`.
+
+## Adding Parcel Ownership {#process-adding-ownership}
+
+::: callout-important
+Every parcel ***must*** have an owner before YWT became involved in the parcel. Even if the owner is unknown, the `landowner` field must not be *`NULL`*. The ownership start date for this prior landowner can be `*NULL*` as the model is not interested with tracking their land terrier history, only YWT's.
+:::
+
+1)  Select the newly constructed parcel with the identify tool ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionIdentify.svg){width="24"} to open up the widget.
+2)  Add a new entry to the `land_admin.ownership` layer for the site ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"}. Each site owner follows on from the next through sale/gift etc. Add the records with the date of when the new landowner took on the parcel. If Yorkshire Wildlife Trust is the owner, the landowner must be entered as **'Trust'** to enable accurate reporting.
+3)  Save the edits to generate an `ownership_uuid`.
+
+## Adding Parcel occupancy
+
+1)  Open the parcel widget using the steps in [Adding Parcel Ownership](#process-adding-ownership).
+
+# Functionality
+
+## Views
+
+::: {#fig-fh-tenure-timeline}
+```{mermaid}
+%%{init: { 'gantt': {'leftPadding': 200} } }%%
+gantt
+    title Tenure History for a Parcel
+    dateFormat  YYYY
+    axisFormat %Y
+    
+    section Original Landowner
+    Freehold      :3rdownership1, 2010, 10y
+    
+    section YWT
+    Leasehold      :ywtoccupancy1, 2017, 3y
+    
+    Freehold       :ywtownership1, after 3rdownership1, 2035
+    section 3rd Party
+    Leasehold      :3rdoccupancy1, 2023, 4y
+
+```
+
+Example tenure history for a given parcel. The chart is interpreted as: the parcel was initially leased by YWT from the landowner for 3 years. The Trust purchased the freehold in 2020, ending the lease. The Trust then leased out the site to a 3rd party in 2024 for four years but remains the freeholder.
+:::
+
+# Exports
+
+## Standards
+
+*Link to milestones*
+
+# FAQs
+
+**Why does the sites table not have a geometry?**
+
+It is important to maintain the spatial relationship between the land parcels and the site boundaries. It is easier to build the site boundaries on demand through a view than to remember to keep the geometries in sync manually.
+
+```{r db-disconnect}
+dbDisconnect(db_con)
+```
