@@ -47,3 +47,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+/.quarto/
+
+# Output folder
+/_site/
+
+# Config file
+config.yml
