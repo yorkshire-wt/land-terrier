@@ -7,7 +7,7 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - land_terrier_instructions_user.qmd
+      - user_guide.qmd
       - technical_guide.qmd
 
 format:
