@@ -7,7 +7,8 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - tenure_user.qmd
+      - land_terrier_instructions_user.qmd
+      - technical_guide.qmd
 
 format:
   html:
