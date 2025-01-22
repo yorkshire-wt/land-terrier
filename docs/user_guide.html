@@ -125,12 +125,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#adding-ownership" id="toc-adding-ownership" class="nav-link" data-scroll-target="#adding-ownership">Adding Ownership</a></li>
   <li><a href="#adding-occupancy" id="toc-adding-occupancy" class="nav-link" data-scroll-target="#adding-occupancy">Adding Occupancy</a></li>
   </ul></li>
-  <li><a href="#viewing-reporting-outputs" id="toc-viewing-reporting-outputs" class="nav-link" data-scroll-target="#viewing-reporting-outputs">Viewing Reporting Outputs</a></li>
   <li><a href="#advanced-workflow" id="toc-advanced-workflow" class="nav-link" data-scroll-target="#advanced-workflow">Advanced Workflow</a>
   <ul class="collapse">
   <li><a href="#modifying-parcel-geoms" id="toc-modifying-parcel-geoms" class="nav-link" data-scroll-target="#modifying-parcel-geoms">Modifying parcel geometries</a></li>
   <li><a href="#handling-model-edge-cases" id="toc-handling-model-edge-cases" class="nav-link" data-scroll-target="#handling-model-edge-cases">Handling model edge cases</a></li>
   </ul></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">Outputs</a></li>
   </ul>
 </nav>
     </div>
@@ -177,7 +177,7 @@ ul.task-list li input[type="checkbox"] {
 <h1>Workflow</h1>
 <section id="adding-sites" class="level2">
 <h2 class="anchored" data-anchor-id="adding-sites">Adding Sites</h2>
-<p>The first step is to make sure that a site is registers in the <code>land_admin.sites</code> table.</p>
+<p>The first step is to make sure that a site is registerd in the <code>land_admin.sites</code> table.</p>
 <p>Start by adding a new record <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg" class="img-fluid" width="24"> to the <code>sites</code> table.</p>
 <p>Check the spelling of the <code>site_name</code> as this will be the the <strong>definitive name</strong> and must be used as throughout the Trust.</p>
 <p>Create an alpha-numeric code to use as the <code>site_id</code>. Try to make it a three letter code to keep it as simple as possible. This will become the <strong>unique identifier</strong> for the site and must be used consistently across the Trust.</p>
@@ -196,7 +196,7 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out by a GIS specialist.</p>
+<p>Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out with care by a GIS specialist.</p>
 </div>
 </div>
 <p>Begin by digitising the parcels on the <code>land_admin.parcels</code> layer <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionCapturePolygon.svg" class="img-fluid" width="24">.</p>
@@ -210,18 +210,14 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Digitise against the INSPIRE polygons if available. Make sure they are topologically correct with no gaps or overlaps.</p>
+<p>Digitise against the <a href="https://www.gov.uk/guidance/inspire-index-polygons-spatial-data">INSPIRE polygons</a> if available. Make sure they are topologically correct with no gaps or overlaps.</p>
 </div>
 </div>
 <p>Complete the form and remember to assign the parcel to a site (available in the drop-down).</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="assets/img/form-parcels-01.PNG" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
+<p><img src="assets/img/form-parcels-01.PNG" class="img-fluid"></p>
 <p>You can also add additional information about the parcel using the <strong>File</strong> tab.</p>
 <p><img src="assets/img/form-parcels-02.PNG" class="img-fluid"></p>
-<p>Notice that the <strong>Metadata</strong> tab and <code>area_ha</code> field are not populated yet. This happens the layer is committed to the database (see triggers).</p>
+<p>Notice that the <strong>Metadata</strong> tab and <code>area_ha</code> field are not populated yet. This happens when the layer is committed to the database (see <a href="./technical_guide.html#sec-parcel-triggers">parcel triggers</a>).</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -235,8 +231,6 @@ Important
 <p>Leave the <code>valid to</code> and <code>valid from</code> fields blank. See <a href="#modifying-parcel-geoms">Modifying parcel geometries</a> on how to use these fields to update the parcel geometries.</p>
 </div>
 </div>
-<p>If you inspect a committed parcel, you will see the information has been updated automatically.</p>
-<p><img src="assets/img/form-parcels-03.PNG" class="img-fluid"></p>
 <p>Click <strong>OK</strong> and save the layer edits <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg" class="img-fluid" width="24">. This will create a unique <code>parcel_uuid</code> identifier that will be referenced by the <code>ownership</code> layer and is also used for tracking the changes to the parcel geometry over time.</p>
 <p>warning: Do not try to add tenure information yet. The parcel needs to be committed to the database first with the <strong>Save Layer Edits</strong> <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg" class="img-fluid" width="24">. This will generate the <code>parcel_uuid</code>.</p>
 <div class="quarto-figure quarto-figure-center">
@@ -244,6 +238,8 @@ Important
 <p><img src="assets/img/parcel-geom-01.PNG" class="img-fluid quarto-figure quarto-figure-center figure-img" width="425"></p>
 </figure>
 </div>
+<p>If you now inspect a committed parcel, you will see <code>area_ha</code> information has been updated automatically.</p>
+<p><img src="assets/img/form-parcels-03.PNG" class="img-fluid"></p>
 </section>
 <section id="adding-ownership" class="level2">
 <h2 class="anchored" data-anchor-id="adding-ownership">Adding Ownership</h2>
@@ -265,7 +261,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>It is highly recommended that you start with an original owner. All land is owned by someone so there will have been an owner before the Trust acquires it. We are not concerned when the original owner acquired the land (this may not even be known) so the <code>ownership_date_start</code> should be left blank.</p>
+<p>It is highly recommended that you start with an original owner. All land is owned by someone so there will have been an owner before the Trust acquired it. We are not concerned when the original owner acquired the land (this may not even be known) so the <code>ownership_date_start</code> should be left blank.</p>
 </div>
 </div>
 <p>If the Trust has acquired the land and become the owner, create a new record with the <code>ownership_date_start</code> as the date the Trust came into legal ownership. This cannot be left blank.</p>
@@ -283,7 +279,7 @@ Important
 </div>
 </div>
 <p><img src="assets/img/form-ownership-02.PNG" class="img-fluid"></p>
-<p>You may also with to add additional information about the ownership under the <strong>File</strong> tab.</p>
+<p>You may also wish to add additional information about the ownership under the <strong>File</strong> tab.</p>
 <p><img src="assets/img/form-ownership-03.PNG" class="img-fluid"></p>
 <p>Make sure to click <strong>OK</strong> and commit the changes to generate the <code>ownership_uuid</code>.</p>
 <p>Notice that the expression for the record on the left automatically updates to show the ending of the previous owner’s tenure.</p>
@@ -293,7 +289,7 @@ Important
 <p>Occupancy works by being linked to an ownership record. This allows for the two way scenarios of Trusts owning land and leasing it out; and Trusts being the leaseholders on land they don’t own.</p>
 <p>To add an occupancy record, select the ownership record you want it to refer to.</p>
 <p>Go to the last tab called <strong>Occupancy</strong>.</p>
-<p>Fill in the information. All occupancy records must have an <code>occupancy_date_start</code>. There are some scenarios where the <code>occupancy_date_end</code> is either unknown or it is in a periodic tenancy where, as long as you keep paying, the lease carried on.</p>
+<p>Fill in the information. All occupancy records must have an <code>occupancy_date_start</code>. There are some scenarios where the <code>occupancy_date_end</code> is either unknown or it is in a periodic tenancy where, as long as you keep paying, the lease carries on.</p>
 <p><img src="assets/img/form-occupancy-01.PNG" class="img-fluid"></p>
 <p>The <code>renewal_type_code</code> and <code>termination_date</code> are used to indicate what happens once you are past the end date. Some leases will “holdover” after expiry whereas others have a legal cutoff. If you are past <code>occupancy_date_end</code> you will either enter a holdover or a squat. These leases need to be re-negotiated. Once you have agreed a new lease or have vacated the site, you should set the <code>termination_date</code>. This field stops the holdover or ends the squat.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -310,9 +306,6 @@ Note
 </div>
 </div>
 </section>
-</section>
-<section id="viewing-reporting-outputs" class="level1">
-<h1>Viewing Reporting Outputs</h1>
 </section>
 <section id="advanced-workflow" class="level1">
 <h1>Advanced Workflow</h1>
@@ -347,9 +340,15 @@ Note
 <li>Terminate the Trust’s current lease with the same date as the new owner’s possession.</li>
 <li>Setup a new lease with the new owner starting with the new date.</li>
 </ul>
-
-
 </section>
+</section>
+<section id="outputs" class="level1">
+<h1>Outputs</h1>
+<p>There are two main outputs from the terrier:</p>
+<p><code>public.sites_export</code></p>
+<p><code>public.tenure_export</code></p>
+
+
 </section>
 
 </main> <!-- /main -->

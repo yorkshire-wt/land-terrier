@@ -1,1 +1,6 @@
 /* css styles */
+
+.btn-default {
+  bs-btn-bg: #c9dce9;
+  text-align: center;
+}
