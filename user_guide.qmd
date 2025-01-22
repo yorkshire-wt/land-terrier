@@ -14,7 +14,7 @@ The Land Terrier has a relational model so it is important to add table entries 
 
 ## Adding Sites
 
-The first step is to make sure that a site is registerd in the `land_admin.sites` table.
+The first step is to make sure that a site is registered in the `land_admin.sites` table.
 
 Start by adding a new record ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"} to the `sites` table.
 
@@ -46,7 +46,7 @@ You can also add additional information about the parcel using the **File** tab.
 
 ![](assets/img/form-parcels-02.PNG)
 
-Notice that the **Metadata** tab and `area_ha` field are not populated yet. This happens when the layer is committed to the database (see [parcel triggers](technical_guide.qmd#sec-parcel-triggers)).
+Notice that the **Metadata** tab and `area_ha` field are not populated yet. This happens when the layer is committed to the database (see [parcel triggers](technical_guide.qmd#parcels)).
 
 ::: callout-important
 Leave the `valid to` and `valid from` fields blank. See [Modifying parcel geometries](#modifying-parcel-geoms) on how to use these fields to update the parcel geometries.
@@ -54,8 +54,9 @@ Leave the `valid to` and `valid from` fields blank. See [Modifying parcel geomet
 
 Click **OK** and save the layer edits ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}. This will create a unique `parcel_uuid` identifier that will be referenced by the `ownership` layer and is also used for tracking the changes to the parcel geometry over time.
 
-warning: Do not try to add tenure information yet. The parcel needs to be committed to the database first with the **Save Layer Edits** ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}. This will generate the `parcel_uuid`.
-
+::: callout-warning
+Do not try to add tenure information yet. The parcel needs to be committed to the database first with the **Save Layer Edits** ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}. This will generate the `parcel_uuid`.
+:::
 ![](assets/img/parcel-geom-01.PNG){fig-align="center" width="425"}
 
 If you now inspect a committed parcel, you will see `area_ha` information has been updated automatically.
@@ -64,7 +65,7 @@ If you now inspect a committed parcel, you will see `area_ha` information has be
 
 ## Adding Ownership
 
-Although ownership and occupancy information can be added directly to the tables, it requires inputting and referencing the correct uuids. It is easier to start at the parcel level and use the in-built forms to keep the information up to date.
+Ownership and occupancy information can be added directly to the tables, but that requires inputting and referencing the correct parcel uuids. Therefore, it is easier to start at the parcel level and use the in-built forms to keep the information up to date and to maintain the references.
 
 Open up the parcel form using the identify tool ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionIdentify.svg){width="24"}.
 

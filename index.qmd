@@ -1,8 +1,6 @@
 ---
-title: "Home"
+title: "Installation"
 ---
-
-# Installation
 
 The Land Terrier Database was created with the following software versions. It should work on newer versions and it *might* work on older versions...
 

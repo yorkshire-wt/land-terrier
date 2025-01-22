@@ -276,7 +276,7 @@ Figure&nbsp;1: A simplified ERD diagram of the main tables. Domain tables that a
 <tr class="odd">
 <td style="text-align: left;">site_wildness_code</td>
 <td style="text-align: left;">text</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Internal designation of how wild the site is (YWT specific).</td>
 </tr>
 </tbody><tfoot>
 <tr class="even">
@@ -394,7 +394,7 @@ Note
 <section id="domains" class="level3">
 <h3 class="anchored" data-anchor-id="domains">Domains</h3>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Main Habitat</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Site Category</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Wildness Rating</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Main Habitat</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Site Category</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
@@ -524,43 +524,11 @@ Note
 </table>
 </div>
 </div>
-</div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 8%">
-<col style="width: 81%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">site_wildness_code</th>
-<th style="text-align: left;">Site Wildness</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">W1</td>
-<td style="text-align: left;">Wild</td>
-<td style="text-align: left;">Relaxed, accessible and welcoming all year- round. An introduction to Yorkshire’s wild places for all ages, complete with creature comforts.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">W2</td>
-<td style="text-align: left;">Wilder</td>
-<td style="text-align: left;">A step off the beaten track, where visitors can explore and nurture their budding passion for Yorkshire’s wildlife.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">W3</td>
-<td style="text-align: left;">Wildest</td>
-<td style="text-align: left;">Really wild spaces, often hosting seasonal spectacles, for the really adventurous who aren’t shy in navigating the great outdoors!</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<!-- #### Wildness Rating -->
+<!-- ```{r domain-site-wildness} -->
+<!-- get_domain_table(db_con, 'dom_site_wildness') %>% -->
+<!--   kable() -->
+<!-- ``` -->
 </div>
 </div>
 </div>
@@ -568,7 +536,7 @@ Note
 </section>
 <section id="parcels" class="level2">
 <h2 class="anchored" data-anchor-id="parcels">Parcels</h2>
-<p>Parcel geometries form the building blocks of sites they may or may not be registered with <a href="https://www.gov.uk/government/organisations/land-registry">HM Land Registry</a>. The mapped parcels must adhere to the following rules;</p>
+<p>Parcel geometries form the building blocks of sites they may or may not be registered with <a href="https://www.gov.uk/government/organisations/land-registry">HM Land Registry</a>. The mapped parcels must adhere to the following rules:</p>
 <ul>
 <li><p>Parcel geometries must be valid and topologically correct</p></li>
 <li><p>Parcels must be reference the site they are part of</p></li>
@@ -817,7 +785,7 @@ Important
 </section>
 <section id="ownership" class="level2">
 <h2 class="anchored" data-anchor-id="ownership">Ownership</h2>
-<p>Tenure defines the ownership of the land parcels. The rows in the freehold tenure table function as timeline entries, recording the tenure history over time. Land ownership transitions immediately to the new owner upon the end of the previous ownership, hence there is only a tenure start field. Using this structure it is very easy to maintain the narrative assuming the following assumptions</p>
+<p>Tenure defines the ownership of the land parcels. The rows in the freehold tenure table function as timeline entries, recording the tenure history over time. Land ownership transitions immediately to the new owner upon the end of the previous ownership, hence there is only a tenure start field. Using this structure it is very easy to maintain the narrative assuming the following assumptions:</p>
 <ul>
 <li><p>Tenure must not have gaps in date ranges. This would indicate that the parcel is not owned by anyone which cannot be true.</p></li>
 <li><p>A parcel cannot have the more then one freeholder at the same time.</p></li>
@@ -1083,7 +1051,7 @@ Important
 </section>
 <section id="occupancy" class="level2">
 <h2 class="anchored" data-anchor-id="occupancy">Occupancy</h2>
-<p>Land parcels may be leased by the Trust from a 3rd party. The Trust can also lease out land that it owns or sub-lease if it is in an agreement of its own. Parcels may not have a leasehold so this is optional. This table tracks both parcels that the Trust leases and those that it leases out..</p>
+<p>Land parcels may be leased by the Trust from a 3rd party. The Trust can also lease out land that it owns or sub-lease if it is in an agreement of its own. Parcels may not have a leasehold so this is optional. This table tracks both parcels that the Trust leases and those that it leases out.</p>
 <ul>
 <li>Leases must reference a freeholder (either directly or indirectly through a sub-lease).</li>
 <li>A leaseholder cannot lease form themselves.</li>

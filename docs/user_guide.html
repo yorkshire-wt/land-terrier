@@ -177,7 +177,7 @@ ul.task-list li input[type="checkbox"] {
 <h1>Workflow</h1>
 <section id="adding-sites" class="level2">
 <h2 class="anchored" data-anchor-id="adding-sites">Adding Sites</h2>
-<p>The first step is to make sure that a site is registerd in the <code>land_admin.sites</code> table.</p>
+<p>The first step is to make sure that a site is registered in the <code>land_admin.sites</code> table.</p>
 <p>Start by adding a new record <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg" class="img-fluid" width="24"> to the <code>sites</code> table.</p>
 <p>Check the spelling of the <code>site_name</code> as this will be the the <strong>definitive name</strong> and must be used as throughout the Trust.</p>
 <p>Create an alpha-numeric code to use as the <code>site_id</code>. Try to make it a three letter code to keep it as simple as possible. This will become the <strong>unique identifier</strong> for the site and must be used consistently across the Trust.</p>
@@ -217,7 +217,7 @@ Note
 <p><img src="assets/img/form-parcels-01.PNG" class="img-fluid"></p>
 <p>You can also add additional information about the parcel using the <strong>File</strong> tab.</p>
 <p><img src="assets/img/form-parcels-02.PNG" class="img-fluid"></p>
-<p>Notice that the <strong>Metadata</strong> tab and <code>area_ha</code> field are not populated yet. This happens when the layer is committed to the database (see <a href="./technical_guide.html#sec-parcel-triggers">parcel triggers</a>).</p>
+<p>Notice that the <strong>Metadata</strong> tab and <code>area_ha</code> field are not populated yet. This happens when the layer is committed to the database (see <a href="./technical_guide.html#parcels">parcel triggers</a>).</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -232,7 +232,19 @@ Important
 </div>
 </div>
 <p>Click <strong>OK</strong> and save the layer edits <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg" class="img-fluid" width="24">. This will create a unique <code>parcel_uuid</code> identifier that will be referenced by the <code>ownership</code> layer and is also used for tracking the changes to the parcel geometry over time.</p>
-<p>warning: Do not try to add tenure information yet. The parcel needs to be committed to the database first with the <strong>Save Layer Edits</strong> <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg" class="img-fluid" width="24">. This will generate the <code>parcel_uuid</code>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Do not try to add tenure information yet. The parcel needs to be committed to the database first with the <strong>Save Layer Edits</strong> <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg" class="img-fluid" width="24">. This will generate the <code>parcel_uuid</code>.</p>
+</div>
+</div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="assets/img/parcel-geom-01.PNG" class="img-fluid quarto-figure quarto-figure-center figure-img" width="425"></p>
@@ -243,7 +255,7 @@ Important
 </section>
 <section id="adding-ownership" class="level2">
 <h2 class="anchored" data-anchor-id="adding-ownership">Adding Ownership</h2>
-<p>Although ownership and occupancy information can be added directly to the tables, it requires inputting and referencing the correct uuids. It is easier to start at the parcel level and use the in-built forms to keep the information up to date.</p>
+<p>Ownership and occupancy information can be added directly to the tables, but that requires inputting and referencing the correct parcel uuids. Therefore, it is easier to start at the parcel level and use the in-built forms to keep the information up to date and to maintain the references.</p>
 <p>Open up the parcel form using the identify tool <img src="https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionIdentify.svg" class="img-fluid" width="24">.</p>
 <p>Add a new ownership entry in the <strong>Tenure</strong> section of the form.</p>
 <div class="quarto-figure quarto-figure-center">

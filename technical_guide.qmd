@@ -128,19 +128,19 @@ get_domain_table(db_con, 'dom_site_categories') %>%
 
 ```
 
-#### Wildness Rating
+<!-- #### Wildness Rating -->
 
-```{r domain-site-wildness}
+<!-- ```{r domain-site-wildness} -->
 
-get_domain_table(db_con, 'dom_site_wildness') %>%
-  kable()
+<!-- get_domain_table(db_con, 'dom_site_wildness') %>% -->
+<!--   kable() -->
 
-```
+<!-- ``` -->
 :::
 
 ## Parcels
 
-Parcel geometries form the building blocks of sites they may or may not be registered with [HM Land Registry](https://www.gov.uk/government/organisations/land-registry). The mapped parcels must adhere to the following rules;
+Parcel geometries form the building blocks of sites they may or may not be registered with [HM Land Registry](https://www.gov.uk/government/organisations/land-registry). The mapped parcels must adhere to the following rules:
 
 -   Parcel geometries must be valid and topologically correct
 
@@ -215,7 +215,7 @@ get_domain_table(db_con, 'dom_boundary_types') %>%
 
 ## Ownership
 
-Tenure defines the ownership of the land parcels. The rows in the freehold tenure table function as timeline entries, recording the tenure history over time. Land ownership transitions immediately to the new owner upon the end of the previous ownership, hence there is only a tenure start field. Using this structure it is very easy to maintain the narrative assuming the following assumptions
+Tenure defines the ownership of the land parcels. The rows in the freehold tenure table function as timeline entries, recording the tenure history over time. Land ownership transitions immediately to the new owner upon the end of the previous ownership, hence there is only a tenure start field. Using this structure it is very easy to maintain the narrative assuming the following assumptions:
 
 -   Tenure must not have gaps in date ranges. This would indicate that the parcel is not owned by anyone which cannot be true.
 
@@ -295,7 +295,7 @@ get_domain_table(db_con, 'dom_transfer_types') %>%
 
 ## Occupancy
 
-Land parcels may be leased by the Trust from a 3rd party. The Trust can also lease out land that it owns or sub-lease if it is in an agreement of its own. Parcels may not have a leasehold so this is optional. This table tracks both parcels that the Trust leases and those that it leases out..
+Land parcels may be leased by the Trust from a 3rd party. The Trust can also lease out land that it owns or sub-lease if it is in an agreement of its own. Parcels may not have a leasehold so this is optional. This table tracks both parcels that the Trust leases and those that it leases out.
 
 -   Leases must reference a freeholder (either directly or indirectly through a sub-lease).
 -   A leaseholder cannot lease form themselves.
