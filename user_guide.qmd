@@ -14,7 +14,7 @@ The Land Terrier has a relational model so it is important to add table entries 
 
 ## Adding Sites
 
-The first step is to make sure that a site is registers in the `land_admin.sites` table.
+The first step is to make sure that a site is registerd in the `land_admin.sites` table.
 
 Start by adding a new record ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"} to the `sites` table.
 
@@ -29,38 +29,38 @@ Click **OK** and save the layer edits ![](https://raw.githubusercontent.com/qgis
 ## Adding Parcels
 
 ::: callout-warning
-Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out by a GIS specialist.
+Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out with care by a GIS specialist.
 :::
 
 Begin by digitising the parcels on the `land_admin.parcels` layer ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionCapturePolygon.svg){width="24"}.
 
 ::: callout-note
-Digitise against the INSPIRE polygons if available. Make sure they are topologically correct with no gaps or overlaps.
+Digitise against the [INSPIRE polygons](https://www.gov.uk/guidance/inspire-index-polygons-spatial-data) if available. Make sure they are topologically correct with no gaps or overlaps.
 :::
 
 Complete the form and remember to assign the parcel to a site (available in the drop-down).
 
-![](assets/img/form-parcels-01.PNG){fig-align="center"}
+![](assets/img/form-parcels-01.PNG)
 
 You can also add additional information about the parcel using the **File** tab.
 
 ![](assets/img/form-parcels-02.PNG)
 
-Notice that the **Metadata** tab and `area_ha` field are not populated yet. This happens the layer is committed to the database (see triggers).
+Notice that the **Metadata** tab and `area_ha` field are not populated yet. This happens when the layer is committed to the database (see [parcel triggers](technical_guide.qmd#sec-parcel-triggers)).
 
 ::: callout-important
-Leave the `valid to` and `valid from` fields blank. See [Modifying parcel geometries] on how to use these fields to update the parcel geometries.
+Leave the `valid to` and `valid from` fields blank. See [Modifying parcel geometries](#modifying-parcel-geoms) on how to use these fields to update the parcel geometries.
 :::
-
-If you inspect a committed parcel, you will see the information has been updated automatically.
-
-![](assets/img/form-parcels-03.PNG)
 
 Click **OK** and save the layer edits ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}. This will create a unique `parcel_uuid` identifier that will be referenced by the `ownership` layer and is also used for tracking the changes to the parcel geometry over time.
 
 warning: Do not try to add tenure information yet. The parcel needs to be committed to the database first with the **Save Layer Edits** ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}. This will generate the `parcel_uuid`.
 
 ![](assets/img/parcel-geom-01.PNG){fig-align="center" width="425"}
+
+If you now inspect a committed parcel, you will see `area_ha` information has been updated automatically.
+
+![](assets/img/form-parcels-03.PNG)
 
 ## Adding Ownership
 
@@ -73,7 +73,7 @@ Add a new ownership entry in the **Tenure** section of the form.
 ![](assets/img/form-ownership-01.PNG){fig-align="center"}
 
 ::: callout-note
-It is highly recommended that you start with an original owner. All land is owned by someone so there will have been an owner before the Trust acquires it. We are not concerned when the original owner acquired the land (this may not even be known) so the `ownership_date_start` should be left blank.
+It is highly recommended that you start with an original owner. All land is owned by someone so there will have been an owner before the Trust acquired it. We are not concerned when the original owner acquired the land (this may not even be known) so the `ownership_date_start` should be left blank.
 :::
 
 If the Trust has acquired the land and become the owner, create a new record with the `ownership_date_start` as the date the Trust came into legal ownership. This cannot be left blank.
@@ -84,7 +84,7 @@ In order for the tenure to be tracked correctly, the Wildlife Trust that the ter
 
 ![](assets/img/form-ownership-02.PNG)
 
-You may also with to add additional information about the ownership under the **File** tab.
+You may also wish to add additional information about the ownership under the **File** tab.
 
 ![](assets/img/form-ownership-03.PNG)
 
@@ -100,19 +100,15 @@ To add an occupancy record, select the ownership record you want it to refer to.
 
 Go to the last tab called **Occupancy**.
 
-Fill in the information. All occupancy records must have an `occupancy_date_start`. There are some scenarios where the `occupancy_date_end` is either unknown or it is in a periodic tenancy where, as long as you keep paying, the lease carried on.
+Fill in the information. All occupancy records must have an `occupancy_date_start`. There are some scenarios where the `occupancy_date_end` is either unknown or it is in a periodic tenancy where, as long as you keep paying, the lease carries on.
 
 ![](assets/img/form-occupancy-01.PNG)
 
 The `renewal_type_code` and `termination_date` are used to indicate what happens once you are past the end date. Some leases will "holdover" after expiry whereas others have a legal cutoff. If you are past `occupancy_date_end` you will either enter a holdover or a squat. These leases need to be re-negotiated. Once you have agreed a new lease or have vacated the site, you should set the `termination_date`. This field stops the holdover or ends the squat.
 
-:::callout-note
+::: callout-note
 To make sure that there is a continual timeline of occupancy, the next negotiated lease should start when the previous one is terminated.
 :::
-
-# Viewing Reporting Outputs
-
-
 
 # Advanced Workflow
 
@@ -143,3 +139,11 @@ Resolution:
 -   Create a new ownership record with the date the new owner comes into possession.
 -   Terminate the Trust's current lease with the same date as the new owner's possession.
 -   Setup a new lease with the new owner starting with the new date.
+
+# Outputs
+
+There are two main outputs from the terrier:
+
+`public.sites_export`
+
+`public.tenure_export`
