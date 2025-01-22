@@ -183,16 +183,16 @@ dbGetQuery(db_con, "SELECT pg_constraint_name,
   kable()
 ```
 
-### Privileges
+<!-- ### Privileges -->
 
-```{r parcels-privileges}
+<!-- ```{r parcels-privileges} -->
 
-dbGetQuery(db_con, "SELECT pg_privilege_type,
-                        pg_privilege_grantees,
-                        pg_privilege_description
-           FROM utils.get_table_privileges_info('land_admin', 'parcels')") |>
-  kable()
-```
+<!-- dbGetQuery(db_con, "SELECT pg_privilege_type, -->
+<!--                         pg_privilege_grantees, -->
+<!--                         pg_privilege_description -->
+<!--            FROM utils.get_table_privileges_info('land_admin', 'parcels')") |> -->
+<!--   kable() -->
+<!-- ``` -->
 
 ### Triggers
 
@@ -254,16 +254,16 @@ dbGetQuery(db_con, "SELECT pg_constraint_name,
   kable()
 ```
 
-### Privileges
+<!-- ### Privileges -->
 
-```{r ownership-privileges}
+<!-- ```{r ownership-privileges} -->
 
-dbGetQuery(db_con, "SELECT pg_privilege_type,
-                        pg_privilege_grantees,
-                        pg_privilege_description
-           FROM utils.get_table_privileges_info('land_admin', 'ownership')") |>
-  kable()
-```
+<!-- dbGetQuery(db_con, "SELECT pg_privilege_type, -->
+<!--                         pg_privilege_grantees, -->
+<!--                         pg_privilege_description -->
+<!--            FROM utils.get_table_privileges_info('land_admin', 'ownership')") |> -->
+<!--   kable() -->
+<!-- ``` -->
 
 ### Triggers
 
@@ -333,16 +333,16 @@ dbGetQuery(db_con, "SELECT pg_constraint_name,
   kable()
 ```
 
-### Privileges
+<!-- ### Privileges -->
 
-```{r occupancy-privileges}
+<!-- ```{r occupancy-privileges} -->
 
-dbGetQuery(db_con, "SELECT pg_privilege_type,
-                        pg_privilege_grantees,
-                        pg_privilege_description
-           FROM utils.get_table_privileges_info('land_admin', 'occupancy')") |>
-  kable()
-```
+<!-- dbGetQuery(db_con, "SELECT pg_privilege_type, -->
+<!--                         pg_privilege_grantees, -->
+<!--                         pg_privilege_description -->
+<!--            FROM utils.get_table_privileges_info('land_admin', 'occupancy')") |> -->
+<!--   kable() -->
+<!-- ``` -->
 
 ### Triggers
 
@@ -369,14 +369,14 @@ get_domain_table(db_con, 'dom_occupancy_types') %>%
 
 ```
 
-#### Renewal Types 
+#### Renewal Types
+
 ```{r domain-renewal-type}
 
 get_domain_table(db_con, 'dom_renewal_types') %>%
   kable()
 
 ```
-
 :::
 
 ## Parcel History
@@ -413,16 +413,16 @@ dbGetQuery(db_con, "SELECT pg_constraint_name,
   kable()
 ```
 
-### Privileges
+<!-- ### Privileges -->
 
-```{r parcel-history-privileges}
+<!-- ```{r parcel-history-privileges} -->
 
-dbGetQuery(db_con, "SELECT pg_privilege_type,
-                        pg_privilege_grantees,
-                        pg_privilege_description
-           FROM utils.get_table_privileges_info('land_admin', 'parcel_history')") |>
-  kable()
-```
+<!-- dbGetQuery(db_con, "SELECT pg_privilege_type, -->
+<!--                         pg_privilege_grantees, -->
+<!--                         pg_privilege_description -->
+<!--            FROM utils.get_table_privileges_info('land_admin', 'parcel_history')") |> -->
+<!--   kable() -->
+<!-- ``` -->
 
 ### Triggers
 
