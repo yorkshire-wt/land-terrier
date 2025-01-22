@@ -47,6 +47,13 @@ The Trust needs a way to know what land holdings it currently owns and which it 
 
 In the absence of a full Land Terrier, some useful features have been implemented to track changes over time.
 
+# Database Configuration
+## Service
+Postgresql Service file... etc...
+## Roles
+`land_administrator`
+`gis_administrator`
+## Loading from backup
 # Schema Definition
 
 ::: {#fig-land-admin-erd}
@@ -66,7 +73,7 @@ Sites are a classification given for a group of land holdings (parcels) that the
 -   All areas in a site with or without known ownership/tenure must be accounted for on the parcel layer
 
 ::: panel-tabset
-# Columns
+### Columns
 
 ```{r sites-columns}
 
@@ -80,7 +87,7 @@ dbGetQuery(db_con, "SELECT pg_column_name || CASE WHEN pg_not_null THEN '*' ELSE
 
 ```
 
-# Constraints
+### Constraints
 
 ```{r sites-constraints}
 
@@ -91,7 +98,7 @@ dbGetQuery(db_con, "SELECT pg_constraint_name,
   kable()
 ```
 
-# Privileges
+### Privileges
 
 ```{r sites-privileges}
 
@@ -110,7 +117,7 @@ The `sites` table does not have a geometry. The full site table is created from 
 ### Domains
 
 ::: panel-tabset
-# Main Habitat
+#### Main Habitat
 
 ```{r domain-main-habitat}
 
@@ -119,7 +126,7 @@ get_domain_table(db_con, 'dom_main_habitats') %>%
 
 ```
 
-# Site Category
+#### Site Category
 
 ```{r domain-site-category}
 
@@ -128,7 +135,7 @@ get_domain_table(db_con, 'dom_site_categories') %>%
 
 ```
 
-# Site Wildness
+#### Wildness Rating
 
 ```{r domain-site-wildness}
 
@@ -203,20 +210,11 @@ dbGetQuery(db_con, "SELECT pg_trigger_name,
 ### Domains
 
 ::: panel-tabset
-# Boundary Type
+#### Boundary Types
 
 ```{r domain-boundary-type}
 
 get_domain_table(db_con, 'dom_boundary_types') %>%
-  kable()
-
-```
-
-# Wildness Rating
-
-```{r domain-access-status}
-
-get_domain_table(db_con, 'dom_site_wildness') %>%
   kable()
 
 ```
@@ -283,11 +281,20 @@ dbGetQuery(db_con, "SELECT pg_trigger_name,
 ### Domains
 
 ::: panel-tabset
-# Ownership Types
+#### Ownership Types
 
 ```{r domain-ownership-type}
 
 get_domain_table(db_con, 'dom_ownership_types') %>%
+  kable()
+
+```
+
+#### Transfer Types
+
+```{r domain-transfer-type}
+
+get_domain_table(db_con, 'dom_transfer_types') %>%
   kable()
 
 ```
@@ -353,7 +360,7 @@ dbGetQuery(db_con, "SELECT pg_trigger_name,
 ### Domains
 
 ::: panel-tabset
-# Occupancy Types
+#### Occupancy Types
 
 ```{r domain-occupancy-type}
 
@@ -361,6 +368,15 @@ get_domain_table(db_con, 'dom_occupancy_types') %>%
   kable()
 
 ```
+
+#### Renewal Types 
+```{r domain-renewal-type}
+
+get_domain_table(db_con, 'dom_renewal_types') %>%
+  kable()
+
+```
+
 :::
 
 ## Parcel History
@@ -455,7 +471,7 @@ Every parcel ***must*** have an owner before YWT became involved in the parcel. 
 :::
 
 1)  Select the newly constructed parcel with the identify tool ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionIdentify.svg){width="24"} to open up the widget.
-2)  Add a new entry to the `land_admin.ownership` layer for the site ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"}. Each site owner follows on from the next through sale/gift etc. Add the records with the date of when the new landowner took on the parcel. If Yorkshire Wildlife Trust is the owner, the landowner must be entered as **'Trust'** to enable accurate reporting.
+2)  Add a new entry to the `land_admin.ownership` layer for the site ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"}. Each site owner follows on from the next through sale/gift etc. Add the records with the date of when the new landowner took on the parcel. If the Trust is the owner, the landowner must be entered as **'Trust'** to enable accurate reporting.
 3)  Save the edits to generate an `ownership_uuid`.
 
 ## Adding Parcel occupancy
@@ -493,7 +509,15 @@ Example tenure history for a given parcel. The chart is interpreted as: the parc
 
 ## Standards
 
-*Link to milestones*
+There are two main spatial views that are used for exporting to the common format:
+
+`public.sites_export`
+
+`public.tenure_export`
+
+A summary of the tenure is also provided:
+
+`land_admin.vw_tenure_all`
 
 # FAQs
 

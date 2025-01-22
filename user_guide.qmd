@@ -5,11 +5,10 @@ date-modified: last-modified
 ---
 
 # Introduction
-`{r} format(Sys.Date(), '%d/%m/%Y')`
 
 The Land Terrier has a relational model so it is important to add table entries in the correct order. A QGIS project has been created in the `qgis` schema to aid with managing the layers.
 
-![](assets/img/terrier-connection.PNG){fig-align="center"}
+![](assets/img/terrier-connection.PNG)
 
 # Workflow
 
@@ -19,11 +18,19 @@ The first step is to make sure that a site is registers in the `land_admin.sites
 
 Start by adding a new record ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionNewTableRow.svg){width="24"} to the `sites` table.
 
-![](assets/img/form-sites.PNG){fig-align="center"}
+Check the spelling of the `site_name` as this will be the the **definitive name** and must be used as throughout the Trust.
+
+Create an alpha-numeric code to use as the `site_id`. Try to make it a three letter code to keep it as simple as possible. This will become the **unique identifier** for the site and must be used consistently across the Trust.
+
+![](assets/img/form-sites.PNG)
 
 Click **OK** and save the layer edits ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionSaveEdits.svg){width="24"}.
 
 ## Adding Parcels
+
+::: callout-warning
+Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out by a GIS specialist.
+:::
 
 Begin by digitising the parcels on the `land_admin.parcels` layer ![](https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/images/themes/default/mActionCapturePolygon.svg){width="24"}.
 
@@ -103,7 +110,11 @@ The `renewal_type_code` and `termination_date` are used to indicate what happens
 To make sure that there is a continual timeline of occupancy, the next negotiated lease should start when the previous one is terminated.
 :::
 
-# Advanced Techniques
+# Viewing Reporting Outputs
+
+
+
+# Advanced Workflow
 
 ## Modifying parcel geometries {#modifying-parcel-geoms}
 

@@ -1,5 +1,38 @@
 ---
-title: "Home Page"
+title: "Home"
 ---
 
-Placeholder...
+# Installation
+
+The Land Terrier Database was created with the following software versions. It should work on newer versions and it *might* work on older versions...
+
+:::{.callout_info}
+
+``` default
+PostgreSQL 16.4, compiled by Visual C++ build 1940, 64-bit
+POSTGIS 3.4.2
+QGIS 3.34.8-Prizren
+```
+:::
+
+It's easiest to create the database using the `psql.exe`. Which can be found here:
+
+``` default
+C:\Program Files\PostgreSQL\16\bin
+```
+
+The sql script will create a new database called `land_terrier` so it doesn't matter which database the script is executed in. I have used the default `postgres` database in this example:
+
+``` cmd
+psql -U postgres -d postgres -f "\db\land_terrier.sql" 
+```
+
+# Configuration
+
+The QGIS project is configured to connect to a service called `land-terrier`. A `.pg_service.conf` service file needs to be created with the connection parameters to your PostgreSQL server and it needs to be available on the QGIS path.
+
+For instructions, follow this [guide](https://www.opengis.ch/2024/05/28/the-postgresql-connection-service-file-and-why-we-love-it/).
+
+Once configured, you can connect to the database like this and the QGIS project should work correctly:
+
+![](/assets/img/qgis-lt-connect.png)
