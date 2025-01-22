@@ -15,6 +15,12 @@ QGIS 3.34.8-Prizren
 ```
 :::
 
+Download the creation sql script:
+
+
+{{< downloadthis db/land_terrier.sql dname="land_terrier" label="land_terrier.sql" >}}
+
+
 It's easiest to create the database using the `psql.exe`. Which can be found here:
 
 ``` default
