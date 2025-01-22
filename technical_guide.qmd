@@ -43,23 +43,16 @@ db_con <- db_con(verbose = F)
 
 All nature reserves the Trust manages are are made up of discrete parcels of land. Some of the parcels have been purchased by the Trust, others are leased (usually on a long term basis).
 
-The Trust needs a way to know what land holdings it currently owns and which it leases. This information is usually tracked through a [Land Terrier](https://en.wikipedia.org/wiki/Land_terrier). It is beyond the scope of the GIS database replicate all the features of a land terrier as this requires complex bi-temporal modelling and must consider [slowly changing dimensions](https://en.wikipedia.org/wiki/Slowly_changing_dimension) (SCDs) to maintain a full audit trail.
+The Trust needs a way to know what land holdings it currently owns and which it leases. This information is usually tracked through a [Land Terrier](https://en.wikipedia.org/wiki/Land_terrier). It is beyond the scope of the GIS database replicate all the features of a land terrier as this requires complex bi-temporal modelling and must consider [slowly changing dimensions](https://en.wikipedia.org/wiki/Slowly_changing_dimension) (SCDs) to maintain an audit trail.
 
 In the absence of a full Land Terrier, some useful features have been implemented to track changes over time.
 
-# Database Configuration
-## Service
-Postgresql Service file... etc...
-## Roles
-`land_administrator`
-`gis_administrator`
-## Loading from backup
-# Schema Definition
+# Database Schema
 
 ::: {#fig-land-admin-erd}
 ![](assets/img/erd_small.png)
 
-An ERD diagram.
+A simplified ERD diagram of the main tables. Domain tables that are used as look-ups have been left out.
 :::
 
 # Tables
@@ -455,7 +448,7 @@ The land administration process has been designed to be conducted using QGIS by 
 Inserting/updating parcel geometries requires advanced digitising techniques to maintain topologies, snap to nodes, and avoid overlaps. Any errors will result in misaligned site boundaries so this must be carried out by a GIS specialist.
 :::
 
-1)  Use the INSPIRE polygons layer as a basis to digitise a new parcel on the `land_admin.parcels`. If the polygons disagree with the deeds, seek advice from {{< var estates_officer >}}.
+1)  Use the [INSPIRE polygons](https://www.gov.uk/guidance/inspire-index-polygons-spatial-data) layer as a basis to digitise a new parcel on the `land_admin.parcels`.
 2)  Complete the required information including designating which site the parcel belongs to. **Leave the `valid_to` and `valid_from` fields as *`NULL`***.
 
 ::: callout-warning
