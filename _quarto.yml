@@ -6,7 +6,7 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Installation
       - user_guide.qmd
       - technical_guide.qmd
 
@@ -15,5 +15,6 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
+    fig-align: center
 
 editor: visual
