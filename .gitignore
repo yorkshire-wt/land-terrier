@@ -51,7 +51,7 @@ rsconnect/
 /.quarto/
 
 # Output folder
-/_site/
+#/_site/
 
 # Config file
 config.yml
